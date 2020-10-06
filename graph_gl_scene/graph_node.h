@@ -4,6 +4,8 @@
 #include "graph_window_data.h"
 #include <QMatrix4x4>
 #include <QOpenGLShaderProgram>
+#include <QPainter>
+#include <QOpenGLWidget>
 
 class graph_node
 {
@@ -23,7 +25,7 @@ public:
 
     void set_scale(float scale);
 
-    void draw(QOpenGLShaderProgram & shader);
+    void draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent);
 };
 
 #endif // GRAPH_NODE_H

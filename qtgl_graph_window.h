@@ -10,6 +10,7 @@
 #include <QMouseEvent>
 #include "graph_gl_scene/graph_window_data.h"
 #include "graph_gl_scene/graph_node.h"
+#include <QPainter>
 
 class qtgl_graph_window : public QOpenGLWidget
 {

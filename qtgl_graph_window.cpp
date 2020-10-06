@@ -70,8 +70,9 @@ void qtgl_graph_window::mouse_press_event(QMouseEvent *e)
 
 void qtgl_graph_window::paintGL(){
     glClear(GL_COLOR_BUFFER_BIT);
-    n1.set_position(0.2f, 0.3f);
-    n1.set_scale(0.2f);
-    n1.set_scale(0.2f);
-    n1.draw(shader_program);
+
+    n1.set_position(0.5f, 0.5f);
+    n1.set_scale(0.05f);
+    n1.draw(shader_program, this);
+
 }
