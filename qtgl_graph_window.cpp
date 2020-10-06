@@ -3,13 +3,15 @@
 
 qtgl_graph_window::qtgl_graph_window(QWidget *parent) : QOpenGLWidget(parent),
     shader_program(),
-    graph_data(&shader_program)
+    graph_data(&shader_program),
+    n1(&graph_data)
 {
 
 }
 
 qtgl_graph_window::~qtgl_graph_window()
 {
+
     makeCurrent();
     graph_data.cleanup();
     doneCurrent();
@@ -68,4 +70,8 @@ void qtgl_graph_window::mouse_press_event(QMouseEvent *e)
 
 void qtgl_graph_window::paintGL(){
     glClear(GL_COLOR_BUFFER_BIT);
+    n1.set_position(0.2f, 0.3f);
+    n1.set_scale(0.2f);
+    n1.set_scale(0.2f);
+    n1.draw(shader_program);
 }

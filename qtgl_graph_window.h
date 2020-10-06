@@ -9,6 +9,7 @@
 #include <QOpenGLShaderProgram>
 #include <QMouseEvent>
 #include "graph_gl_scene/graph_window_data.h"
+#include "graph_gl_scene/graph_node.h"
 
 class qtgl_graph_window : public QOpenGLWidget
 {
@@ -21,6 +22,8 @@ class qtgl_graph_window : public QOpenGLWidget
     QOpenGLShaderProgram shader_program;
 
     graph_window_data graph_data;
+
+    graph_node n1;
 
 
 public:

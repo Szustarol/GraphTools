@@ -23,15 +23,21 @@ class graph_window_data
 
     std::shared_ptr<QOpenGLShaderProgram> shader_prog;
 
-    void gen_circle_vertices(unsigned n_vertices = 20);
+    void gen_circle_vertices(unsigned n_vertices = 15);
+
 
     void gen_circle_indices();
 
 
 public:
+
+    unsigned n_circle_elements;
+
     void build();
 
     void cleanup();
+
+    QOpenGLVertexArrayObject & get_circle_vao();
 
     graph_window_data(QOpenGLShaderProgram * parent_shader);
     ~graph_window_data();

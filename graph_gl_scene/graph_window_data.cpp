@@ -14,18 +14,19 @@ void graph_window_data::gen_circle_indices()
 
     std::vector<GLuint> circle_indices;
 
-    for(GLuint i = 0; i < n_all; i+=2){
+    for(unsigned i = 0; i < n_all-2; i++){
         circle_indices.push_back(i);
+        circle_indices.push_back(i+1);
+        circle_indices.push_back(i+2);
     }
 
     circle_indices.push_back(0);
-    circle_indices.push_back(1);
+    circle_indices.push_back(n_all-1);
+    circle_indices.push_back(n_all-2);
 
-    for(GLuint i = 1+2; i < n_all; i+= 2){
-        circle_indices.push_back(i);
-    }
-
+    circle_indices.push_back(0);
     circle_indices.push_back(1);
+    circle_indices.push_back(n_all-1);
 
     circle_element_buffer.bind();
     circle_element_buffer.allocate(sizeof(GLuint)*circle_indices.size());
@@ -72,6 +73,14 @@ graph_window_data::~graph_window_data()
 
 void graph_window_data::cleanup(){
     circle_VAO.destroy();
+    circle_element_buffer.destroy();
+    circle_vertex_buffer.destroy();
+
+}
+
+QOpenGLVertexArrayObject &graph_window_data::get_circle_vao()
+{
+    return circle_VAO;
 }
 
 
@@ -101,4 +110,6 @@ void graph_window_data::gen_circle_vertices(unsigned int n_vertices){
     circle_vertex_buffer.write(0,
                                circle_vertices.data(),
                                sizeof(circle_vertex)*circle_vertices.size());
+
+    n_circle_elements = n_vertices * 6;
 }
