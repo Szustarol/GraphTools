@@ -1,6 +1,7 @@
 #include "graph_window_data.h"
 #include <QtMath>
 #include <QOpenGLExtraFunctions>
+#include <iostream>
 #include <QOpenGLFunctions>
 
 tight_vector2d::tight_vector2d(QVector2D & rec){
@@ -42,7 +43,9 @@ float & tight_vector4d::w(){
 
 void graph_window_data::gen_circle_indices()
 {
-    unsigned n_all = circle_vertices.size();
+
+    std::vector<GLuint> circle_indices;
+
 
     if(n_all < 2) return;
 
@@ -80,7 +83,6 @@ void graph_window_data::build()
     circle_element_buffer.bind();
 
 
-
     parent_shader->setAttributeBuffer(0,
                                      GL_FLOAT,
                                      offsetof(circle_vertex, position) + offsetof(tight_vector2d, dat),
@@ -94,6 +96,8 @@ void graph_window_data::build()
                                      sizeof(circle_vertex));
     parent_shader->enableAttributeArray(1);
     circle_VAO.release();
+
+    gen_edge_all();
 
 }
 
@@ -120,8 +124,90 @@ QOpenGLVertexArrayObject &graph_window_data::get_circle_vao()
     return circle_VAO;
 }
 
+QOpenGLVertexArrayObject &graph_window_data::get_edge_vao(bool directed)
+{
+    if(directed)
+            return directed_edge_VAO;
+    return undirected_edge_VAO;
+}
+
+
+void graph_window_data::gen_edge_all(){
+    float vertices[] = {
+        0.2f, -1.0f, 0.0f, 0.0f, 1.0f, 0.7f,
+        -0.2f, -1.0f, 0.0f, 0.0f, 1.0f, 0.7f,
+        -0.2f, 0.8f, 0.0f, 0.0f, 1.0f, 0.7f,
+        -0.3f, 0.7f, 0.0f, 0.0f, 1.0f, 0.7f,
+        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.7f,
+        0.3f, 0.7f, 0.0f, 0.0f, 1.0f, 0.7f,
+        0.2f, 0.8f, 0.0f, 0.0f, 1.0f, 0.7f,
+        0.2f, 1.0f, 0.0f, 0.0f, 1.0f, 0.7f,
+        -0.2f, 1.0f, 0.0f, 0.0f, 1.0f, 0.7f
+    };
+
+    GLuint indices_directed[] = {
+        0, 1, 6,
+        1, 2, 6,
+        2, 3, 4,
+        4, 6, 5,
+        2, 6, 4
+    };
+
+    GLuint indices_undirected[] = {
+        1, 7, 8,
+        1, 7, 0
+    };
+
+    directed_edge_element_buffer = QOpenGLBuffer(QOpenGLBuffer::Type::IndexBuffer);
+    undirected_edge_element_buffer = QOpenGLBuffer(QOpenGLBuffer::Type::IndexBuffer);
+    edge_vertex_buffer = QOpenGLBuffer(QOpenGLBuffer::Type::VertexBuffer);
+
+    edge_vertex_buffer.create();
+    edge_vertex_buffer.bind();
+    edge_vertex_buffer.allocate(vertices, sizeof(vertices));
+
+    directed_edge_element_buffer.create();
+    directed_edge_element_buffer.bind();
+    directed_edge_element_buffer.allocate(indices_directed, sizeof(indices_directed));
+
+    undirected_edge_element_buffer.create();
+    undirected_edge_element_buffer.bind();
+    undirected_edge_element_buffer.allocate(indices_undirected, sizeof(indices_undirected));
+
+    directed_edge_VAO.create();
+    directed_edge_VAO.bind();
+    directed_edge_element_buffer.bind();
+    edge_vertex_buffer.bind();
+
+    parent_shader->setAttributeBuffer(0, GL_FLOAT, 0, 2, 6*sizeof(float));
+    parent_shader->setAttributeBuffer(1, GL_FLOAT, 2*sizeof(float), 4, 6*sizeof(float));
+    parent_shader->enableAttributeArray(0);
+    parent_shader->enableAttributeArray(1);
+    directed_edge_VAO.release();
+
+    undirected_edge_VAO.create();
+    undirected_edge_VAO.bind();
+    undirected_edge_element_buffer.bind();
+    edge_vertex_buffer.bind();
+
+    parent_shader->setAttributeBuffer(0, GL_FLOAT, 0, 2, 6*sizeof(float));
+    parent_shader->setAttributeBuffer(1, GL_FLOAT, 2*sizeof(float), 4, 6*sizeof(float));
+    parent_shader->enableAttributeArray(0);
+    parent_shader->enableAttributeArray(1);
+    undirected_edge_VAO.release();
+
+    n_undirected_elements = sizeof(indices_undirected)/ sizeof(GLuint) / 3;
+    n_directed_elements = sizeof(indices_directed) / sizeof(GLuint) / 3;
+
+    directed_edge_element_buffer.release();
+    undirected_edge_element_buffer.release();
+    edge_vertex_buffer.release();
+
+}
 
 void graph_window_data::gen_circle_vertices(unsigned int n_vertices){
+    std::vector<circle_vertex> circle_vertices;
+
     for(float p = 0; p < n_vertices; p++){
         float c_part = p/n_vertices*2*M_PI;
         QVector2D pos;
@@ -150,4 +236,6 @@ void graph_window_data::gen_circle_vertices(unsigned int n_vertices){
                                   sizeof(circle_vertex)*circle_vertices.size());
 
     n_circle_elements = n_vertices * 6;
+    n_all = circle_vertices.size();
+
 }

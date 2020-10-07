@@ -31,32 +31,43 @@ class graph_window_data
         tight_vector4d color;
     };
 
-    std::vector<circle_vertex> circle_vertices;
-    std::vector<GLuint> circle_indices;
 
     QOpenGLBuffer circle_element_buffer;
     QOpenGLBuffer circle_vertex_buffer;
     QOpenGLVertexArrayObject circle_VAO;
+
+    QOpenGLBuffer directed_edge_element_buffer;
+    QOpenGLBuffer undirected_edge_element_buffer;
+    QOpenGLBuffer edge_vertex_buffer;
+    QOpenGLVertexArrayObject directed_edge_VAO;
+    QOpenGLVertexArrayObject undirected_edge_VAO;
+
 
     QOpenGLShaderProgram * parent_shader;
 
     std::shared_ptr<QOpenGLShaderProgram> shader_prog;
 
     void gen_circle_vertices(unsigned n_vertices = 15);
-
-
     void gen_circle_indices();
+
+    void gen_edge_all();
+    unsigned n_all;
 
 
 public:
 
     unsigned n_circle_elements;
 
+    unsigned n_directed_elements;
+    unsigned n_undirected_elements;
+
     void build();
 
     void cleanup();
 
     QOpenGLVertexArrayObject & get_circle_vao();
+    QOpenGLVertexArrayObject & get_edge_vao(bool directed);
+
 
     graph_window_data(QOpenGLShaderProgram * parent_shader);
     ~graph_window_data();

@@ -27,6 +27,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    graph_gl_scene/graph_edge.cpp \
     graph_gl_scene/graph_node.cpp \
     graph_gl_scene/graph_window_data.cpp \
     main.cpp \
@@ -34,6 +35,7 @@ SOURCES += \
     qtgl_graph_window.cpp
 
 HEADERS += \
+    graph_gl_scene/graph_edge.h \
     graph_gl_scene/graph_node.h \
     graph_gl_scene/graph_window_data.h \
     mainwindow.h \

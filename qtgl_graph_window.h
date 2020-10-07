@@ -10,7 +10,19 @@
 #include <QMouseEvent>
 #include "graph_gl_scene/graph_window_data.h"
 #include "graph_gl_scene/graph_node.h"
+#include "graph_gl_scene/graph_edge.h"
 #include <QPainter>
+#include <map>
+
+enum click_type{
+    NONE,
+    DRAG,
+    ADD_NODE,
+    DELETE,
+    ADD_CONNECTION_START,
+    ADD_CONNECTION_END
+};
+
 
 class qtgl_graph_window : public QOpenGLWidget
 {
@@ -24,22 +36,31 @@ class qtgl_graph_window : public QOpenGLWidget
 
     graph_window_data graph_data;
 
-    graph_node n1;
-
     QMatrix4x4 view;
 
     float posx_begin = -1, posy_begin = -1;
     float lastx, lasty;
-    float grabbing = false;
 
     float screen_offset_x = 0, screen_offset_y = 0;
 
     float all_scale = 1.0f;
 
-    int screen_w;
+    float aspect;
 
+    int screen_w, screen_h;
+
+    std::map<unsigned, graph_node> vertices;
+    std::vector<graph_edge> edges;
+
+    QVector2D edge_start_pos;
+    QVector2D edge_end_pos;
+    QMatrix4x4 projection;
 
 public:
+    click_type click;
+
+    int find_node_at_pos(int x, int y);
+
     explicit qtgl_graph_window(QWidget *parent = nullptr);
     ~qtgl_graph_window();
 
@@ -54,6 +75,11 @@ public:
     void mouseReleaseEvent(QMouseEvent * e) override;
     void mouseMoveEvent(QMouseEvent * e) override;
     void wheelEvent(QWheelEvent * e) override;
+
+public slots:
+    void add_vertex_clicked();
+    void remove_vertex_clicked();
+    void add_edge_directed_clicked();
 
 
 signals:

@@ -24,35 +24,43 @@ graph_node::graph_node(graph_window_data * graph_window)
 
 void graph_node::create_model(){
     translation_matrix.setToIdentity();
-    translation_matrix.translate(posx, posy);
+    translation_matrix.translate(posx+screen_offset_x, posy+screen_offset_y);
     translation_matrix.scale(scale);
-    translation_matrix.scale(1.0f, aspect_ratio);
 
 }
 
 void graph_node::set_position(float x, float y)
 {
-    posx = x + screen_offset_x;
-    posy = y + screen_offset_y;
-    create_model();
+    posx = x;
+    posy = y;
+    //create_model();
 }
 
 void graph_node::set_scale(float scale)
 {
     this->scale = scale;
-    create_model();
+    //create_model();
 }
 
-void graph_node::draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMatrix4x4 *view){
+QVector2D graph_node::get_position() const {
+    QVector2D r;
+    r.setX(posx);
+    r.setY(posy);
+    return r;
+};
+
+
+void graph_node::draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMatrix4x4 *view, QMatrix4x4 * projection){
     shader.bind();
+    create_model();
     auto & vao = graph_window->get_circle_vao();
     vao.bind();
     shader.setUniformValue("model_matrix", translation_matrix);
     glDrawElements(GL_TRIANGLES, graph_window->n_circle_elements, GL_UNSIGNED_INT, 0);
     vao.release();
     shader.release();
-    QVector4D tr = QVector4D(posx, posy, 1.0f, 1.0f);
-    tr = *view * tr;
+    QVector4D tr = QVector4D(posx+screen_offset_x, posy+screen_offset_y, 1.0f, 1.0f);
+    tr = *projection * *view * tr;
     if(abs(tr.x()) < 1 and abs(tr.y()) < 1){
         float w = parent->width();
         float h = parent->height();
@@ -60,7 +68,7 @@ void graph_node::draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMa
         h = (1-tr.y())*h/2;
         QPainter painter(parent);
         painter.setPen(Qt::white);
-        painter.drawText(QRect(w-50, h-50, 100, 100), Qt::AlignCenter | Qt::AlignHCenter, "121");
+        painter.drawText(QRect(w-50, h-50, 100, 100), Qt::AlignCenter | Qt::AlignHCenter, QString::number(index));
         painter.end();
     }
 }

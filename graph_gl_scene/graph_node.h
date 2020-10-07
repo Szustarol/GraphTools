@@ -21,6 +21,11 @@ class graph_node
     void create_model();
 
 public:
+
+    unsigned index;
+
+    QVector2D get_position() const;
+
     static float aspect_ratio;
     static float screen_offset_x, screen_offset_y;
 
@@ -32,7 +37,7 @@ public:
 
     void set_scale(float scale);
 
-    void draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMatrix4x4 * view);
+    void draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMatrix4x4 * view, QMatrix4x4 * projection);
 };
 
 #endif // GRAPH_NODE_H
