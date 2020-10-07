@@ -6,9 +6,13 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11 file_copies
 
-COPIES += shaders
+COPIES += shaders icons translations
 
 shaders.files = $$files(graph_gl_scene/*.glsl)
+icons.files = $$files(icons/*)
+translations.files = $$files(*.qm)
+translations.path = $$OUT_PWD/translations
+icons.path = $$OUT_PWD/icons
 shaders.path = $$OUT_PWD/graph_gl_scene
 
 # The following define makes your compiler emit warnings if you use
@@ -39,7 +43,7 @@ FORMS += \
     mainwindow.ui
 
 TRANSLATIONS += \
-    GraphTools_pl_PL.ts
+    translations/GraphTools_pl_PL.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

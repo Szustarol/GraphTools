@@ -4,10 +4,11 @@ layout (location = 1) in vec4 vertexCol;
 
 out vec4 vertexColor;
 
+uniform mat4 model_matrix;
 uniform mat4 view_matrix;
 
 void main(void)
 {
     vertexColor = vertexCol;
-    gl_Position = view_matrix * vec4(vertexPosition, 1.0f, 1.0f);
+    gl_Position =  view_matrix * model_matrix * vec4(vertexPosition, 1.0f, 1.0f);
 }

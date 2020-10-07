@@ -26,6 +26,18 @@ class qtgl_graph_window : public QOpenGLWidget
 
     graph_node n1;
 
+    QMatrix4x4 view;
+
+    float posx_begin = -1, posy_begin = -1;
+    float lastx, lasty;
+    float grabbing = false;
+
+    float screen_offset_x = 0, screen_offset_y = 0;
+
+    float all_scale = 1.0f;
+
+    int screen_w;
+
 
 public:
     explicit qtgl_graph_window(QWidget *parent = nullptr);
@@ -38,7 +50,10 @@ public:
     void initializeGL() override;
     void resizeGL(int w, int h) override;
 
-    void mouse_press_event(QMouseEvent * e);
+    void mousePressEvent(QMouseEvent * e) override;
+    void mouseReleaseEvent(QMouseEvent * e) override;
+    void mouseMoveEvent(QMouseEvent * e) override;
+    void wheelEvent(QWheelEvent * e) override;
 
 
 signals:
