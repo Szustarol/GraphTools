@@ -47,6 +47,8 @@ class qtgl_graph_window : public QOpenGLWidget
 
     float aspect;
 
+    bool adding_directed = false;
+
     int screen_w, screen_h;
 
     std::map<unsigned, graph_node> vertices;
@@ -80,6 +82,7 @@ public slots:
     void add_vertex_clicked();
     void remove_vertex_clicked();
     void add_edge_directed_clicked();
+    void add_edge_undirected_clicked();
 
 
 signals:

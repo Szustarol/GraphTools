@@ -22,9 +22,11 @@ public:
 
     bool directed = false;
 
+    float weight;
+
     void set_position(const QVector2D & begin, const QVector2D & end);
 
-    void draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMatrix4x4 * view);
+    void draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMatrix4x4 * view, QMatrix4x4 * projection);
 
     graph_edge(graph_window_data * window_data);
 };

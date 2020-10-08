@@ -165,6 +165,7 @@ void qtgl_graph_window::mousePressEvent(QMouseEvent *e)
             if(node != -1){
                 edge_end_pos = vertices.at(node).get_position();
                 graph_edge ed(&graph_data);
+                ed.directed = adding_directed;
                 ed.set_position(edge_start_pos, edge_end_pos);
                 edges.emplace_back(ed);
 
@@ -172,6 +173,8 @@ void qtgl_graph_window::mousePressEvent(QMouseEvent *e)
             click = NONE;
             update();
         }
+        break;
+        case DRAG://shouldn't happen
         break;
 
     }
@@ -238,13 +241,11 @@ void qtgl_graph_window::paintGL(){
     shader_program.setUniformValue("view_matrix", view);
     shader_program.release();
     for(auto & edge : edges){
-        edge.draw(shader_program, this, &view);
+        edge.draw(shader_program, this, &view, &projection);
     }
     for(auto & vertex : vertices){
         vertex.second.draw(shader_program, this, &view, &projection);
     }
-
-
 }
 
 
@@ -276,6 +277,20 @@ void qtgl_graph_window::add_edge_directed_clicked(){
         click = NONE;
     }
     else{
+        adding_directed = true;
+        QApplication::setOverrideCursor(Qt::ClosedHandCursor);
+        click = ADD_CONNECTION_START;
+    }
+}
+
+
+void qtgl_graph_window::add_edge_undirected_clicked(){
+    if(click == ADD_CONNECTION_START or click == ADD_CONNECTION_END){
+        QApplication::setOverrideCursor(Qt::ArrowCursor);
+        click = NONE;
+    }
+    else{
+        adding_directed = false;
         QApplication::setOverrideCursor(Qt::ClosedHandCursor);
         click = ADD_CONNECTION_START;
     }

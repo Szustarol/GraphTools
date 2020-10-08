@@ -21,6 +21,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->graph_add_connection,
             SIGNAL(clicked()),
             ui->graph_main_gl_window,
+            SLOT(add_edge_undirected_clicked()));
+
+    connect(ui->graph_add_directed_connection,
+            SIGNAL(clicked()),
+            ui->graph_main_gl_window,
             SLOT(add_edge_directed_clicked()));
 }
 
