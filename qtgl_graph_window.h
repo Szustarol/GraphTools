@@ -58,6 +58,12 @@ class qtgl_graph_window : public QOpenGLWidget
     QVector2D edge_end_pos;
     QMatrix4x4 projection;
 
+    bool weighted = false;
+
+    int start_node_id;
+
+    float new_edge_weight = 1;
+
 public:
     click_type click;
 
@@ -78,11 +84,14 @@ public:
     void mouseMoveEvent(QMouseEvent * e) override;
     void wheelEvent(QWheelEvent * e) override;
 
+    void set_new_edge_weight(float weight);
+
 public slots:
     void add_vertex_clicked();
     void remove_vertex_clicked();
     void add_edge_directed_clicked();
     void add_edge_undirected_clicked();
+    void set_graph_weighted(int state);
 
 
 signals:

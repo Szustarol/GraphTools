@@ -72,7 +72,7 @@ int qtgl_graph_window::find_node_at_pos(int x, int y){
         //check if point is inside node
         auto pos = n.second.get_position();
         pos -= target_pos;
-        if (pos.length() < 0.12*all_scale){
+        if (pos.length() < 0.05){
             //found vertex
             return n.first;
         }
@@ -144,8 +144,27 @@ void qtgl_graph_window::mousePressEvent(QMouseEvent *e)
         case DELETE:{
             click = NONE;
             auto node = find_node_at_pos(e->x(), e->y());
-            vertices.erase(node);
-            update();
+            if(node != -1){
+                vertices.erase(node);
+
+                for(int i = edges.size() -1; i >= 0; i--){
+                    if(edges.at(i).node1_id == node or edges.at(i).node2_id == node){
+                        edges.erase(edges.begin() + i);
+                    }
+                }
+
+
+                update();
+                return;
+            }
+            for(unsigned i = 0; i < edges.size(); i++){
+                if(edges.at(i).is_clicked(QPointF(e->x(), e->y()))){
+                    edges.erase(edges.begin()+i);
+                    update();
+                    return;
+                }
+            }
+
         }
         break;
         case ADD_CONNECTION_START:{
@@ -153,6 +172,7 @@ void qtgl_graph_window::mousePressEvent(QMouseEvent *e)
             if(node != -1){
                 click = ADD_CONNECTION_END;
                 edge_start_pos = vertices.at(node).get_position();
+                start_node_id = node;
             }
             else{
                 click = NONE;
@@ -167,6 +187,9 @@ void qtgl_graph_window::mousePressEvent(QMouseEvent *e)
                 graph_edge ed(&graph_data);
                 ed.directed = adding_directed;
                 ed.set_position(edge_start_pos, edge_end_pos);
+                ed.weight = new_edge_weight;
+                ed.node1_id = start_node_id;
+                ed.node2_id = node;
                 edges.emplace_back(ed);
 
             }
@@ -216,7 +239,13 @@ void qtgl_graph_window::wheelEvent(QWheelEvent *e){
     all_scale += delta;
     if(all_scale < 0.2) all_scale = 0.2;
     if(all_scale > 3.0) all_scale = 3.0;
+    graph_edge::all_scale = all_scale;
     update();
+}
+
+void qtgl_graph_window::set_new_edge_weight(float weight)
+{
+    new_edge_weight = weight;
 }
 
 void qtgl_graph_window::mouseReleaseEvent(QMouseEvent *e)
@@ -241,7 +270,7 @@ void qtgl_graph_window::paintGL(){
     shader_program.setUniformValue("view_matrix", view);
     shader_program.release();
     for(auto & edge : edges){
-        edge.draw(shader_program, this, &view, &projection);
+        edge.draw(shader_program, this, &view, &projection, weighted);
     }
     for(auto & vertex : vertices){
         vertex.second.draw(shader_program, this, &view, &projection);
@@ -294,4 +323,18 @@ void qtgl_graph_window::add_edge_undirected_clicked(){
         QApplication::setOverrideCursor(Qt::ClosedHandCursor);
         click = ADD_CONNECTION_START;
     }
+}
+
+void qtgl_graph_window::set_graph_weighted(int state)
+{
+    switch (state){
+    case Qt::Unchecked:
+        weighted = false;
+        break;
+    case Qt::PartiallyChecked:
+    case Qt::Checked:
+        weighted = true;
+        break;
+    }
+    update();
 }
