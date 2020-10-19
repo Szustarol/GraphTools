@@ -65,9 +65,15 @@ class qtgl_graph_window : public QOpenGLWidget
     float new_edge_weight = 1;
 
 public:
+
+    std::pair<std::map<unsigned, graph_node> *, std::vector<graph_edge> *> get_data_pair();
+
     click_type click;
 
     int find_node_at_pos(int x, int y);
+
+    const std::map<unsigned, graph_node> * get_vertices() const;
+    const std::vector<graph_edge> * get_edges() const;
 
     explicit qtgl_graph_window(QWidget *parent = nullptr);
     ~qtgl_graph_window();

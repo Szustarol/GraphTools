@@ -7,6 +7,11 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
+enum graph_output_format{
+    LIST,
+    MATRIX
+};
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -14,6 +19,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+private slots:
+    void on_generate_output_button_clicked();
 
 private:
     Ui::MainWindow *ui;

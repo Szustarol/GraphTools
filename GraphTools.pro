@@ -32,6 +32,7 @@ SOURCES += \
     graph_gl_scene/graph_window_data.cpp \
     main.cpp \
     mainwindow.cpp \
+    parsers/parser.cpp \
     qtgl_graph_window.cpp
 
 HEADERS += \
@@ -39,6 +40,7 @@ HEADERS += \
     graph_gl_scene/graph_node.h \
     graph_gl_scene/graph_window_data.h \
     mainwindow.h \
+    parsers/parser.h \
     qtgl_graph_window.h
 
 FORMS += \

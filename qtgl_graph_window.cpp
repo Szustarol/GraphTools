@@ -59,6 +59,11 @@ void qtgl_graph_window::initializeGL(){
     view = QMatrix4x4();
 }
 
+std::pair<std::map<unsigned, graph_node> *, std::vector<graph_edge> *> qtgl_graph_window::get_data_pair()
+{
+    return std::make_pair<std::map<unsigned, graph_node> *, std::vector<graph_edge> *> (&vertices, &edges);
+}
+
 int qtgl_graph_window::find_node_at_pos(int x, int y){
     float w = width();
     float h = height();
@@ -227,6 +232,8 @@ void qtgl_graph_window::mouseMoveEvent(QMouseEvent * e){
             screen_offset_y += d.y();
             graph_node::screen_offset_x = screen_offset_x;
             graph_node::screen_offset_y = screen_offset_y;
+            graph_edge::screen_offset_x = screen_offset_x;
+            graph_edge::screen_offset_y = screen_offset_y;
             update();
         }
         lastx = e->x();
@@ -245,6 +252,7 @@ void qtgl_graph_window::wheelEvent(QWheelEvent *e){
 
 void qtgl_graph_window::set_new_edge_weight(float weight)
 {
+    std::cout << weight << std::endl;
     new_edge_weight = weight;
 }
 
@@ -276,6 +284,14 @@ void qtgl_graph_window::paintGL(){
         vertex.second.draw(shader_program, this, &view, &projection);
     }
 }
+
+const std::map<unsigned, graph_node> * qtgl_graph_window::get_vertices() const{
+    return &vertices;
+};
+
+const std::vector<graph_edge> * qtgl_graph_window::get_edges() const{
+    return &edges;
+};
 
 
 void qtgl_graph_window::add_vertex_clicked(){

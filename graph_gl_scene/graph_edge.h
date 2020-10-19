@@ -20,8 +20,9 @@ class graph_edge
 
 public:
     static float all_scale;
+    static float screen_offset_x, screen_offset_y;
 
-    int node1_id, node2_id;
+    unsigned node1_id, node2_id;
 
     bool directed = false;
 
