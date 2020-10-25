@@ -28,6 +28,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     graph_gl_scene/graph_edge.cpp \
+    graph_gl_scene/graph_edge_editor.cpp \
     graph_gl_scene/graph_node.cpp \
     graph_gl_scene/graph_window_data.cpp \
     main.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
 
 HEADERS += \
     graph_gl_scene/graph_edge.h \
+    graph_gl_scene/graph_edge_editor.h \
     graph_gl_scene/graph_node.h \
     graph_gl_scene/graph_window_data.h \
     mainwindow.h \
@@ -44,6 +46,7 @@ HEADERS += \
     qtgl_graph_window.h
 
 FORMS += \
+    graph_gl_scene/graph_edge_editor.ui \
     mainwindow.ui
 
 TRANSLATIONS += \

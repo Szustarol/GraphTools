@@ -2,12 +2,26 @@
 #include <QtMath>
 #include <iostream>
 #include <QPainter>
+#include <QDialog>
+#include "graph_edge_editor.h"
 
 float graph_edge::all_scale = 1;
 
 
 float graph_edge::screen_offset_x = 0.0f;
 float graph_edge::screen_offset_y = 0.0f;
+
+void graph_edge::edit(){
+    graph_edge_editor ged;
+    ged.set_state(directed, weight);
+    unsigned res = ged.exec();
+    if(res == QDialog::Accepted){
+        auto result = ged.get_state();
+        weight = result.second;
+        directed = result.first;
+    }
+
+}
 
 graph_edge::graph_edge(graph_window_data * window_data)
 {
@@ -68,8 +82,6 @@ void graph_edge::draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMa
 
 
         tr = *projection * *view  * tr;
-        QPainter painter(parent);
-        painter.setPen(Qt::white);
         QTransform t;
         QVector2D perp;
         perp.setX(-diff.y());
@@ -79,9 +91,8 @@ void graph_edge::draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMa
         t.translate(w, h);
         t.translate(d.x(), d.y());
         t.rotate((angle-90));
-        painter.setTransform(t);
-        painter.drawText(QRect(-(INT_MAX / 2), -(INT_MAX / 2), INT_MAX, INT_MAX), Qt::AlignCenter | Qt::AlignHCenter, QString::number(weight));
-        painter.end();
+        painter_transform = t;
+
     }
 
 
@@ -115,6 +126,17 @@ void graph_edge::draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMa
 
     this->collision_rect = rRect;
 
+}
+
+void graph_edge::drawText(QOpenGLWidget * parent)
+{
+    QPainter painter(parent);
+    painter.setPen(Qt::white);
+
+    painter.setTransform(painter_transform);
+
+    painter.drawText(QRect(-(INT_MAX / 2), -(INT_MAX / 2), INT_MAX, INT_MAX), Qt::AlignCenter | Qt::AlignHCenter, QString::number(weight));
+    painter.end();
 }
 
 bool graph_edge::is_clicked(QPointF click_position){

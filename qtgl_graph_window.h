@@ -20,7 +20,8 @@ enum click_type{
     ADD_NODE,
     DELETE,
     ADD_CONNECTION_START,
-    ADD_CONNECTION_END
+    ADD_CONNECTION_END,
+    EDIT
 };
 
 
@@ -72,6 +73,8 @@ public:
 
     int find_node_at_pos(int x, int y);
 
+    bool isWeighted();
+
     const std::map<unsigned, graph_node> * get_vertices() const;
     const std::vector<graph_edge> * get_edges() const;
 
@@ -97,6 +100,7 @@ public slots:
     void remove_vertex_clicked();
     void add_edge_directed_clicked();
     void add_edge_undirected_clicked();
+    void edit_clicked();
     void set_graph_weighted(int state);
 
 

@@ -14,7 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->graph_main_gl_window->set_shader_paths("graph_gl_scene/fragment_shader.glsl",
                                                "graph_gl_scene/vertex_shader.glsl");
 
-    ui->weight_edit->setValidator(new QDoubleValidator(this));
+    QRegExpValidator* rxv = new QRegExpValidator(QRegExp("[+-]?\\d*[\\.]?\\d+"), this);
+    ui->weight_edit->setValidator(rxv);
 
     connect(ui->graph_add_vertex,
             SIGNAL(clicked()),
@@ -41,13 +42,16 @@ MainWindow::MainWindow(QWidget *parent)
             ui->graph_main_gl_window,
             SLOT(set_graph_weighted(int)));
 
+    connect(ui->graph_edit_button,
+            SIGNAL(clicked()),
+            ui->graph_main_gl_window,
+            SLOT(edit_clicked()));
+
     connect(ui->weight_edit,
             &QLineEdit::editingFinished,
             this,
             [=](){
-                QLocale locale;
-
-                float t = locale.toFloat(ui->weight_edit->text());
+                float t = ui->weight_edit->text().toFloat();
                 ui->graph_main_gl_window->set_new_edge_weight(t);
             });
 
@@ -91,8 +95,9 @@ MainWindow::MainWindow(QWidget *parent)
                 }
                 QString res;
                 if(ui->output_format_combo->currentIndex() == 0)
-                    res = parser::to_list_rep(l, ui->graph_main_gl_window->get_data_pair(), n);
-
+                    res = parser::to_list_rep(l, ui->graph_main_gl_window->get_data_pair(), ui->graph_main_gl_window->isWeighted(), n);
+                else if(ui->output_format_combo->currentIndex() == 1)
+                    res = parser::to_matrix_rep(l, ui->graph_main_gl_window->get_data_pair(), ui->graph_main_gl_window->isWeighted(), n);
                 ui->graph_result->setText(res);
             });
 }
@@ -104,34 +109,3 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::on_generate_output_button_clicked()
-{
-    struct list_edge_data{
-        unsigned to;
-        float weight;
-    };
-
-    struct list_rep{
-        unsigned from;
-        std::list<list_edge_data> to;
-    };
-
-    auto vtcs = ui->graph_main_gl_window->get_vertices();
-    auto edges = ui->graph_main_gl_window->get_edges();
-    graph_output_format of;
-    of = (graph_output_format)ui->output_format_combo->currentIndex();
-    QString output;
-    if(of == MATRIX){
-
-    }
-    else if(of == LIST){
-        //iterate over vertices
-        std::list<list_rep> rep;
-        for(auto & vtx : *vtcs){
-            rep.push_back(list_rep{vtx.first, std::list<list_edge_data>()});
-            auto & out_list = rep.back().to;
-
-
-        }
-    }
-}

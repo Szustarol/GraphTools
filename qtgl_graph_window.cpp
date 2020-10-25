@@ -7,6 +7,7 @@ qtgl_graph_window::qtgl_graph_window(QWidget *parent) : QOpenGLWidget(parent),
     shader_program(),
     graph_data(&shader_program)
 {
+    click = NONE;
 }
 
 qtgl_graph_window::~qtgl_graph_window()
@@ -85,6 +86,11 @@ int qtgl_graph_window::find_node_at_pos(int x, int y){
     return -1;
 }
 
+bool qtgl_graph_window::isWeighted()
+{
+    return weighted;
+}
+
 void qtgl_graph_window::resizeGL(int w, int h)
 {
     screen_w = w;
@@ -144,6 +150,7 @@ void qtgl_graph_window::mousePressEvent(QMouseEvent *e)
                 n.index = i;
                 vertices.emplace(i, n);
                 update();
+                QApplication::setOverrideCursor(Qt::ArrowCursor);
             }
         break;
         case DELETE:{
@@ -153,7 +160,7 @@ void qtgl_graph_window::mousePressEvent(QMouseEvent *e)
                 vertices.erase(node);
 
                 for(int i = edges.size() -1; i >= 0; i--){
-                    if(edges.at(i).node1_id == node or edges.at(i).node2_id == node){
+                    if((int)edges.at(i).node1_id == node or (int)edges.at(i).node2_id == node){
                         edges.erase(edges.begin() + i);
                     }
                 }
@@ -165,6 +172,20 @@ void qtgl_graph_window::mousePressEvent(QMouseEvent *e)
             for(unsigned i = 0; i < edges.size(); i++){
                 if(edges.at(i).is_clicked(QPointF(e->x(), e->y()))){
                     edges.erase(edges.begin()+i);
+                    update();
+                    return;
+                }
+            }
+            QApplication::setOverrideCursor(Qt::ArrowCursor);
+
+        }
+        break;
+        case EDIT:{
+            click = NONE;
+            QApplication::setOverrideCursor(Qt::ArrowCursor);
+            for(unsigned i = 0; i < edges.size(); i++){
+                if(edges.at(i).is_clicked(QPointF(e->x(), e->y()))){
+                    edges.at(i).edit();
                     update();
                     return;
                 }
@@ -199,6 +220,8 @@ void qtgl_graph_window::mousePressEvent(QMouseEvent *e)
 
             }
             click = NONE;
+            QApplication::setOverrideCursor(Qt::ArrowCursor);
+
             update();
         }
         break;
@@ -283,6 +306,38 @@ void qtgl_graph_window::paintGL(){
     for(auto & vertex : vertices){
         vertex.second.draw(shader_program, this, &view, &projection);
     }
+    if(weighted){
+        for(auto & edge : edges){
+            edge.drawText(this);
+        }
+    }
+    if(click != NONE and click != DRAG){
+        QPainter comm_painter(this);
+        comm_painter.setPen(Qt::green);
+        QString t;
+        switch(click){
+        case EDIT:
+            t = tr("graph_edit_edge");
+            break;
+        case DELETE:
+            t = tr("graph_delete");
+            break;
+        case ADD_CONNECTION_START:
+            t = tr("graph_add_start");
+            break;
+        case ADD_CONNECTION_END:
+            t = tr("graph_add_end");
+            break;
+        case ADD_NODE:
+            t = tr("graph_add_node");
+            break;
+        default://shouldn't happen
+            break;
+        }
+
+        comm_painter.drawText(QRect(0, screen_h-40, screen_w, 40), Qt::AlignHCenter, t);
+    }
+
 }
 
 const std::map<unsigned, graph_node> * qtgl_graph_window::get_vertices() const{
@@ -303,6 +358,7 @@ void qtgl_graph_window::add_vertex_clicked(){
         QApplication::setOverrideCursor(Qt::ArrowCursor);
         click = NONE;
     }
+    update();
 }
 
 void qtgl_graph_window::remove_vertex_clicked(){
@@ -314,6 +370,7 @@ void qtgl_graph_window::remove_vertex_clicked(){
         QApplication::setOverrideCursor(Qt::ArrowCursor);
         click = NONE;
     }
+    update();
 }
 
 void qtgl_graph_window::add_edge_directed_clicked(){
@@ -326,6 +383,7 @@ void qtgl_graph_window::add_edge_directed_clicked(){
         QApplication::setOverrideCursor(Qt::ClosedHandCursor);
         click = ADD_CONNECTION_START;
     }
+    update();
 }
 
 
@@ -339,6 +397,20 @@ void qtgl_graph_window::add_edge_undirected_clicked(){
         QApplication::setOverrideCursor(Qt::ClosedHandCursor);
         click = ADD_CONNECTION_START;
     }
+    update();
+}
+
+void qtgl_graph_window::edit_clicked()
+{
+    if(click != EDIT){
+        QApplication::setOverrideCursor(Qt::PointingHandCursor);
+        click = EDIT;
+    }
+    else{
+        QApplication::setOverrideCursor(Qt::ArrowCursor);
+        click = NONE;
+    }
+    update();
 }
 
 void qtgl_graph_window::set_graph_weighted(int state)

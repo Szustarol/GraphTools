@@ -6,6 +6,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLShaderProgram>
 #include "graph_window_data.h"
+#include <QPainter>
 
 class graph_edge
 {
@@ -17,6 +18,8 @@ class graph_edge
     graph_window_data * window_data;
 
     QPolygonF collision_rect;
+
+    QTransform painter_transform;
 
 public:
     static float all_scale;
@@ -30,9 +33,13 @@ public:
 
     bool is_clicked(QPointF click_position);
 
+    void edit();
+
     void set_position(const QVector2D & begin, const QVector2D & end);
 
     void draw(QOpenGLShaderProgram & shader, QOpenGLWidget * parent, QMatrix4x4 * view, QMatrix4x4 * projection, bool weighted = false);
+
+    void drawText(QOpenGLWidget * parent); // must be called after draw
 
     graph_edge(graph_window_data * window_data);
 };

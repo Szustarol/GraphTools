@@ -23,7 +23,8 @@ class parser
 public:
     parser();
 
-    static QString to_list_rep(graph_lang lang, std::pair<std::map<unsigned, graph_node> *, std::vector<graph_edge> *> data, cpp_nopath cppno = ZERO);
+    static QString to_list_rep(graph_lang lang, std::pair<std::map<unsigned, graph_node> *, std::vector<graph_edge> *> data, bool weighted_graph = false, cpp_nopath cppno = ZERO);
+    static QString to_matrix_rep(graph_lang lang, std::pair<std::map<unsigned, graph_node> *, std::vector<graph_edge> *> data, bool weighted_graph = false, cpp_nopath cppno = ZERO);
 };
 
 #endif // PARSER_H
